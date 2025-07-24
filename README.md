@@ -1,5 +1,3 @@
-### 📄 `README.md`
-
 ```markdown
 # 🔐 Dukpt AES Simulator (C++)
 
