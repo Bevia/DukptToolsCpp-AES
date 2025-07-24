@@ -1,5 +1,5 @@
 #include "DukptTestVectors.hpp"
-#include "HexUtils.hpp"
+#include "utils/HexUtils.hpp"
 #include "DukptAES.hpp"
 #include "AesTerminalSimulator.hpp"
 #include <iostream>

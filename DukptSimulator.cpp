@@ -4,7 +4,7 @@
 #include "DukptAES.hpp"
 #include "AesTerminalSimulator.hpp"
 #include "AesHsmSimulator.hpp"
-#include "HexUtils.hpp"
+#include "utils/HexUtils.hpp"
 
 void DukptSimulator::runSimulation(const std::string& pin,
                                    const std::string& pan,

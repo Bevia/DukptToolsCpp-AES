@@ -4,7 +4,7 @@
 #include <vector>
 #include <tuple>
 #include "AesMode.hpp"
-#include "HexUtils.hpp"
+#include "utils/HexUtils.hpp"
 
 class DukptSimulator {
 public:
