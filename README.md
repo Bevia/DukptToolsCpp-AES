@@ -1,7 +1,3 @@
-Absolutely, Vincent. Here's a `README.md` tailored to your project — a fully modular AES/DUKPT simulator written in C++. It covers setup, usage, architecture, and future enhancements, while highlighting your clean design choices.
-
----
-
 ### 📄 `README.md`
 
 ```markdown
