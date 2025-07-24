@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.java": "java-properties",
+        "vector": "cpp",
+        "stdexcept": "cpp"
+    }
+}
