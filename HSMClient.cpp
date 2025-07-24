@@ -1,6 +1,6 @@
 #include <iostream>
 #include "DukptSimulator.hpp"
-#include "DukptTestVectors.hpp"
+#include "testvectors/DukptTestVectors.hpp"
 #include "DukptAES.hpp"
 #include "AesTerminalSimulator.hpp"
 #include "AesHsmSimulator.hpp"
