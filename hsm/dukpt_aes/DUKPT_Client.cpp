@@ -69,13 +69,5 @@ int main()
     std::string extractedPin = extractPIN(decryptedBlock);
     std::cout << "Extracted PIN: " << pin << std::endl;
 
-    // Log outputs
-    std::cout << "Encrypted PIN Block: ";
-    for (auto byte : encryptedBlock)
-    {
-        printf("%02X ", byte);
-    }
-    std::cout << std::endl;
-
     return 0;
 }
