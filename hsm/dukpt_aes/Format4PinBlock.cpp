@@ -37,7 +37,15 @@ std::vector<uint8_t> Format4PinBlock::generate(const std::string &pin, const std
     for (char c : pan12)
         pinBlock.push_back(static_cast<uint8_t>(c - '0'));
 
-    // Ensure final block is 16 bytes
+    /*
+    Format 4 is defined as:
+        A 16-byte block that includes:
+        8 bytes of PIN (format + PIN digits + padding)
+
+        (usually the 12 rightmost digits, padded)
+    */
+   
+    /***** Ensure final block is 16 bytes *****/ 
     if (pinBlock.size() != 16)
         throw std::runtime_error("Generated PIN block must be exactly 16 bytes");
 
