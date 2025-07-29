@@ -16,26 +16,24 @@ inline void printHex(const std::string &label, const std::vector<uint8_t> &data)
     std::cout << std::dec << std::endl;
 }
 
-std::string extractPIN(const std::vector<uint8_t> &pinBlock)
+std::string extractPIN(const std::vector<uint8_t> &decryptedBlock, size_t pinLength)
+{
+    if (decryptedBlock.size() < pinLength)
+        return "";
+
+    std::string pin;
+    for (size_t i = 0; i < pinLength; ++i)
     {
-        if (pinBlock.empty())
-            return "";
-
-        size_t pinLength = pinBlock[0]; // First byte = length
-        std::string pin;
-
-        for (size_t i = 1; i <= pinLength; ++i)
-        {
-            uint8_t digit = pinBlock[i];
-            pin += std::to_string(digit);
-        }
-
-        return pin;
+        pin += std::to_string(decryptedBlock[i]);
     }
+
+    return pin;
+}
 
 int main()
 {
     std::string pin = "1234";
+    std::string pan = "1234567890123456"; // PAN must be 12 rightmost digits excluding check digit
     std::cout << "PIN: " << pin << std::endl;
 
     std::vector<uint8_t> bdk = {
@@ -47,27 +45,27 @@ int main()
         0x32, 0x10, 0xE0, 0x00, 0x00 // masked bits still intact
     };
 
-    // Generate PIN Block
-    auto pinBlock = Format4PinBlock::generate(pin);
-    printHex("Format 4 PIN Block (Clear)", pinBlock);
-
     printHex("KSN", ksn);
 
-    // Derive Session Key
+    // Derive session key
     DUKPTKeyDerivation dukpt(bdk);
     auto sessionKey = dukpt.deriveKey(ksn);
 
-    // Encrypt PIN Block with Session Key
+    // Generate Format 4 PIN block (PIN + PAN combined, padded to 16 bytes)
+    auto pinBlock = Format4PinBlock::generate(pin, pan);
+    printHex("Format 4 PIN Block (Clear)", pinBlock);
+
+    // Encrypt PIN Block with session key (AES-ECB or CBC if preferred)
     auto encryptedBlock = dukpt.aesEncryptECB(sessionKey, pinBlock);
     printHex("Encrypted PIN Block", encryptedBlock);
 
-    // In HSM
+    // Simulate HSM decryption
     auto decryptedBlock = DukptHsm::aesDecryptECB(sessionKey, encryptedBlock);
     printHex("Decrypted PIN Block", decryptedBlock);
 
     // Extract PIN from decrypted block
-    std::string extractedPin = extractPIN(decryptedBlock);
-    std::cout << "Extracted PIN: " << pin << std::endl;
+    std::string extractedPin = extractPIN(decryptedBlock, pin.length());
+    std::cout << "Extracted PIN: " << extractedPin << std::endl;
 
     return 0;
 }

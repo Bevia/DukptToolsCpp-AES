@@ -4,5 +4,5 @@
 
 class Format4PinBlock {
 public:
-    static std::vector<uint8_t> generate(const std::string& pin);
+    static std::vector<uint8_t> generate(const std::string &pin, const std::string &pan);
 };
