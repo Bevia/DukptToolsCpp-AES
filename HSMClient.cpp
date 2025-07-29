@@ -14,7 +14,7 @@ int main() {
     simulator.runSimulation(
         "1234",                                 // pin
         "4532111122223333",                     // pan
-        AesMode::AES_256_CBC                    // or AES_256_CBC
+        AesMode::AES_128_ECB                    // or AES_256_CBC
     );
 
     // Validate test vectors

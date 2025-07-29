@@ -49,6 +49,8 @@ std::vector<uint8_t> DukptAES::aesCmac(const std::vector<uint8_t> &key,
     }
     else
     {
+        EVP_MAC_CTX_free(ctx);
+        EVP_MAC_free(mac);
         throw std::invalid_argument("Unsupported key length for AES-CMAC");
     }
 
