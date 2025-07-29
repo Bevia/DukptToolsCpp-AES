@@ -41,6 +41,16 @@ std::vector<uint8_t> DUKPTKeyDerivation::tdeaEncryptECB(const std::vector<uint8_
     return encrypted;
 }
 
+// Utility for hex output
+static void printHex(const std::string& label, const std::vector<uint8_t>& data) {
+    std::cout << label << ": ";
+    for (auto byte : data) {
+        std::cout << std::uppercase << std::hex << std::setw(2)
+                  << std::setfill('0') << static_cast<int>(byte) << " ";
+    }
+    std::cout << std::dec << std::endl;
+}
+
 // IPEK Generation per ANSI X9.24-3 using TDEA
 std::vector<uint8_t> DUKPTKeyDerivation::generateIPEK(const std::vector<uint8_t>& ksn) {
     if (ksn.size() < 10) {
@@ -78,14 +88,4 @@ std::vector<uint8_t> DUKPTKeyDerivation::nonReversibleKeyDerivation(const std::v
     std::vector<uint8_t> sessionKey(16);
     // TODO: Implement actual derivation using key masks and transaction counter
     return sessionKey;
-}
-
-// Utility for hex output
-inline void printHex(const std::string& label, const std::vector<uint8_t>& data) {
-    std::cout << label << ": ";
-    for (auto byte : data) {
-        std::cout << std::uppercase << std::hex << std::setw(2)
-                  << std::setfill('0') << static_cast<int>(byte) << " ";
-    }
-    std::cout << std::dec << std::endl;
 }
