@@ -48,6 +48,12 @@
         "unordered_map": "cpp",
         "variant": "cpp",
         "algorithm": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "plantuml.render": "PlantUMLServer",
+        "plantuml.server": "http://www.plantuml.com/plantuml",
+        "plantuml.exportFormat": "png",
+        "plantuml.exportOutDir": "out",
+        "plantuml.jar": "/Users/vincentbevia/Downloads/plantuml.jar"
     }
+
 }

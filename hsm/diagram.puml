@@ -1,0 +1,23 @@
+@startuml
+title DUKPT PIN Encryption Flow (Format 4)
+
+participant Cardholder
+participant Terminal
+participant MerchantSystem
+participant Issuer
+
+Cardholder -> Terminal : 1. Input PIN
+Terminal -> Terminal : 2. Retrieve KSN
+MerchantSystem -> MerchantSystem : 3. Load BDK
+MerchantSystem -> Terminal : 4. Send BDK (or partial derivation config)
+
+Terminal -> Terminal : 5. Derive IPEK from BDK + KSN
+Terminal -> Terminal : 6. Derive Session Key from IPEK + KSN
+Terminal -> Terminal : 7. Format PIN Block (ISO 9564-1, Format 4)
+Terminal -> Terminal : 8. Encrypt PIN Block (AES ECB)
+
+Terminal -> MerchantSystem : 9. Transmit Encrypted PIN Block
+MerchantSystem -> Issuer : 10. Forward to Issuer
+Issuer -> Issuer : 11. Decrypt & Verify PIN
+
+@enduml
