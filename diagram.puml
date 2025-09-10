@@ -1,23 +1,70 @@
 @startuml
-title DUKPT PIN Encryption Flow (Format 4)
+title DUKPT-AES Format 4 — PIN Block Encryption Flow (Manual PIN Entry)
+caption By Vincent Bevia @ Multisafepay
 
-participant Cardholder
-participant Terminal
-participant MerchantSystem
-participant Issuer
 
-Cardholder -> Terminal : 1. Input PIN
-Terminal -> Terminal : 2. Retrieve KSN
-MerchantSystem -> MerchantSystem : 3. Load BDK
-MerchantSystem -> Terminal : 4. Send BDK (or partial derivation config)
+actor Cardholder
+participant "POS Terminal" as Terminal
+participant "HSM / Host System" as HSM
 
-Terminal -> Terminal : 5. Derive IPEK from BDK + KSN
-Terminal -> Terminal : 6. Derive Session Key from IPEK + KSN
-Terminal -> Terminal : 7. Format PIN Block (ISO 9564-1, Format 4)
-Terminal -> Terminal : 8. Encrypt PIN Block (AES ECB)
+== 1. Cardholder Inputs PIN ==
+Cardholder -> Terminal : 1. Enters PIN (e.g. 1234)
 
-Terminal -> MerchantSystem : 9. Transmit Encrypted PIN Block
-MerchantSystem -> Issuer : 10. Forward to Issuer
-Issuer -> Issuer : 11. Decrypt & Verify PIN
+== 2. Format 4 PIN Block Construction ==
+Terminal -> Terminal : 2. Build PIN Block using ISO Format 4
+note right of Terminal
+- PIN = 1234 → 04 12 34 FF FF FF FF FF\n
+- PAN = 541333******0554 → 00005413330554\n
+- Format 4 requires: (PIN_BLOCK ⊕ PAN)
+end note
+
+Terminal -> Terminal : 3. Extract Rightmost 12 Digits of PAN\n(excl. checksum)
+Terminal -> Terminal : 4. Left-pad with zeros to 16 hex digits
+
+Terminal -> Terminal : 5. XOR PIN block with PAN block
+Terminal -> Terminal : 6. Result: Clear PIN Block
+
+== 3. DUKPT Session Key Derivation ==
+Terminal -> Terminal : 7. Use IPEK and KSN to derive Session Key
+note right of Terminal
+- IPEK is injected into terminal during key loading\n
+- KSN = FFFF10000100000000A8\n
+- Derive session key from IPEK + KSN
+end note
+
+== 4. AES-CBC Encryption ==
+Terminal -> Terminal : 8. Generate random IV (16 bytes)
+note right of Terminal
+Example IV_PIN: A1B2C3D4E5F6A7B8...
+end note
+
+Terminal -> Terminal : 9. Encrypt Clear PIN Block\nwith AES-CBC using:\n- Key: DUKPT Session Key\n- IV: IV_PIN
+
+Terminal -> Terminal : 10. Output Encrypted PIN Block
+
+== 5. Forward PIN Data ==
+Terminal -> HSM : 11. Send Encrypted PIN Block + KSN\n+ IV + Format Indicator (4)
+
+HSM -> HSM : 12. Derive IPEK using BDK and KSN
+HSM -> HSM : 13. Derive Session Key from IPEK + KSN
+HSM -> HSM : 14. Decrypt PIN Block using Session Key
+HSM -> HSM : 15. Forward Online Transaction Request to Issuer (if needed)
+
+== 6. Issuer Authorization ==
+HSM -> Issuer : 16. Forward transaction details incl. decrypted PIN
+note right of HSM
+Includes: PAN, amount, PIN, and any other data\nneeded for validation
+end note
+
+Issuer -> Issuer : 17. Perform card + PIN validation\nand risk/fraud checks
+
+Issuer --> HSM : 18. Send authorization response\n(Approved/Declined + Auth Code)
+
+== 7. Terminal Completion ==
+HSM --> Terminal : 19. Forward response to Terminal
+Terminal -> Cardholder : 20. Display transaction result
+note right of Terminal
+e.g., "Approved", "Declined"
+end note
 
 @enduml
